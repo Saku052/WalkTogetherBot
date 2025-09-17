@@ -30,8 +30,8 @@ cron.schedule('0 5 * * *', () => {
   postTweet('楽天モバイル2,980円で無制限！全国エリア対応で快適通信✨社員紹介キャンペーン実施中🎉\nhttps://refer.rakuten.co.jp/participation/auth?campaign=referralmobile_en&inv=HogkjQ1qqpbL-ecSVo3nRWYOgZCZSNch4RHSC8VgWv4%3D&scid=su_15404');
 });
 
-// 日本時間18時
-cron.schedule('0 9 * * *', () => {
+// 日本時間18時15分
+cron.schedule('15 9 * * *', () => {
   postTweet('楽天モバイル2,980円で無制限！全国エリア対応で快適通信✨社員紹介キャンペーン実施中🎉\nhttps://refer.rakuten.co.jp/participation/auth?campaign=referralmobile_en&inv=HogkjQ1qqpbL-ecSVo3nRWYOgZCZSNch4RHSC8VgWv4%3D&scid=su_15404');
 });
 
