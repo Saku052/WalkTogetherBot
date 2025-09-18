@@ -28,25 +28,25 @@ cron.schedule('0 23 * * *', () => {
 
 // 日本時間11時
 cron.schedule('0 2 * * *', () => {
-  postTweet('楽天モバイル2,980円で無制限！全国エリア対応で快適通信✨社員紹介キャンペーン実施中🎉\n\
+  postTweet('午前中からお得情報！楽天モバイル2,980円で無制限データ使い放題🌟社員紹介キャンペーン実施中✨\n\
     https://refer.rakuten.co.jp/participation/auth?campaign=referralmobile_en&inv=HogkjQ1qqpbL-ecSVo3nRWYOgZCZSNch4RHSC8VgWv4%3D&scid=su_15404');
 });
 
 // 日本時間14時
 cron.schedule('0 5 * * *', () => {
-  postTweet('楽天モバイル2,980円で無制限！全国エリア対応で快適通信✨社員紹介キャンペーン実施中🎉\n\
+  postTweet('お昼休みに検討してみませんか？楽天モバイル月額2,980円でデータ無制限💪社員紹介で超お得🎁\n\
     https://refer.rakuten.co.jp/participation/auth?campaign=referralmobile_en&inv=HogkjQ1qqpbL-ecSVo3nRWYOgZCZSNch4RHSC8VgWv4%3D&scid=su_15404');
 });
 
 // 日本時間18時15分
 cron.schedule('15 9 * * *', () => {
-  postTweet('楽天モバイル2,980円で無制限！全国エリア対応で快適通信✨社員紹介キャンペーン実施中🎉\n\
+  postTweet('帰宅時間に朗報！楽天モバイルなら月2,980円で通信制限なし🚀社員紹介キャンペーン開催中📱\n\
     https://refer.rakuten.co.jp/participation/auth?campaign=referralmobile_en&inv=HogkjQ1qqpbL-ecSVo3nRWYOgZCZSNch4RHSC8VgWv4%3D&scid=su_15404');
 });
 
 // 日本時間21時
 cron.schedule('0 12 * * *', () => {
-  postTweet('楽天モバイル2,980円で無制限！全国エリア対応で快適通信✨社員紹介キャンペーン実施中🎉\n\
+  postTweet('夜のリラックスタイムに！楽天モバイル2,980円で快適通信ライフ🌙社員紹介で特典GET✨\n\
     https://refer.rakuten.co.jp/participation/auth?campaign=referralmobile_en&inv=HogkjQ1qqpbL-ecSVo3nRWYOgZCZSNch4RHSC8VgWv4%3D&scid=su_15404');
 });
 
