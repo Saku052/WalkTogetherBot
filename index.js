@@ -41,8 +41,8 @@ cron.schedule('15 9 * * *', () => {
   postTweet(tweetMessages.text4);
 });
 
-// 日本時間21時37分
-cron.schedule('37 12 * * *', () => {
+// 日本時間21時54分
+cron.schedule('54 12 * * *', () => {
   postTweet(tweetMessages.text5);
 });
 
