@@ -49,8 +49,8 @@ cron.schedule('0 23 * * *', () => {
   postAIGeneratedTweet();
 });
 
-// 日本時間11時10分 - AI生成ツイート
-cron.schedule('10 2 * * *', () => {
+// 日本時間11時18分 - AI生成ツイート
+cron.schedule('18 2 * * *', () => {
   postAIGeneratedTweet();
 });
 
