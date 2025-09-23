@@ -44,63 +44,63 @@ async function postAIGeneratedTweet() {
   }
 }
 
-// 日本時間5時12分 - AI生成ツイート
-cron.schedule('12 20 * * *', () => {
+// 日本時間5時07分 - AI生成ツイート
+cron.schedule('7 20 * * *', () => {
   postAIGeneratedTweet();
 });
 
-// 日本時間7時24分 - AI生成ツイート
-cron.schedule('24 22 * * *', () => {
+// 日本時間7時30分 - AI生成ツイート
+cron.schedule('30 22 * * *', () => {
   postAIGeneratedTweet();
 });
 
-// 日本時間9時38分 - AI生成ツイート
-cron.schedule('38 0 * * *', () => {
+// 日本時間9時45分 - AI生成ツイート
+cron.schedule('45 0 * * *', () => {
   postAIGeneratedTweet();
 });
 
-// 日本時間10時31分 - AI生成ツイート
-cron.schedule('31 1 * * *', () => {
+// 日本時間10時25分 - AI生成ツイート
+cron.schedule('25 1 * * *', () => {
   postAIGeneratedTweet();
 });
 
-// 日本時間12時47分 - AI生成ツイート
-cron.schedule('47 3 * * *', () => {
+// 日本時間12時53分 - AI生成ツイート
+cron.schedule('53 3 * * *', () => {
   postAIGeneratedTweet();
 });
 
-// 日本時間14時16分 - AI生成ツイート
-cron.schedule('16 5 * * *', () => {
+// 日本時間14時22分 - AI生成ツイート
+cron.schedule('22 5 * * *', () => {
   postAIGeneratedTweet();
 });
 
-// 日本時間15時53分 - AI生成ツイート
-cron.schedule('53 6 * * *', () => {
+// 日本時間15時48分 - AI生成ツイート
+cron.schedule('48 6 * * *', () => {
   postAIGeneratedTweet();
 });
 
-// 日本時間17時29分 - AI生成ツイート
-cron.schedule('29 8 * * *', () => {
+// 日本時間17時35分 - AI生成ツイート
+cron.schedule('35 8 * * *', () => {
   postAIGeneratedTweet();
 });
 
-// 日本時間19時07分 - AI生成ツイート
-cron.schedule('7 10 * * *', () => {
+// 日本時間19時12分 - AI生成ツイート
+cron.schedule('12 10 * * *', () => {
   postAIGeneratedTweet();
 });
 
-// 日本時間20時41分 - AI生成ツイート
-cron.schedule('41 11 * * *', () => {
+// 日本時間20時16分 - AI生成ツイート
+cron.schedule('16 11 * * *', () => {
   postAIGeneratedTweet();
 });
 
-// 日本時間22時08分 - AI生成ツイート
-cron.schedule('08 13 * * *', () => {
+// 日本時間22時02分 - AI生成ツイート
+cron.schedule('02 13 * * *', () => {
   postAIGeneratedTweet();
 });
 
-// 日本時間1時55分 - AI生成ツイート
-cron.schedule('55 16 * * *', () => {
+// 日本時間1時01分 - AI生成ツイート
+cron.schedule('01 17 * * *', () => {
   postAIGeneratedTweet();
 });
 
