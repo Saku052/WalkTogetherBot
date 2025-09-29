@@ -1,0 +1,101 @@
+{
+  "analysis_summary": {
+    "report_date": "2025-09-29",
+    "total_tweets_analyzed": 96,
+    "data_period": "2025年データ",
+    "engagement_metric": "favorite_count (いいね数)"
+  },
+  "top_performing_times": {
+    "overall_best": {
+      "time": "23時台",
+      "avg_likes": 3.25,
+      "tweet_count": 8,
+      "ranking": 1
+    },
+    "second_best": {
+      "time": "2時台", 
+      "avg_likes": 2.75,
+      "tweet_count": 8,
+      "ranking": 2
+    },
+    "third_best": {
+      "time": "14時台",
+      "avg_likes": 2.67,
+      "tweet_count": 9,
+      "ranking": 3
+    }
+  },
+  "time_category_ranking": [
+    {
+      "category": "夜・深夜 (22-6時)",
+      "avg_likes": 2.37,
+      "tweet_count": 38,
+      "total_likes": 90,
+      "ranking": 1
+    },
+    {
+      "category": "昼 (12-18時)",
+      "avg_likes": 2.05,
+      "tweet_count": 20,
+      "total_likes": 41,
+      "ranking": 2
+    },
+    {
+      "category": "夕方 (18-22時)",
+      "avg_likes": 1.73,
+      "tweet_count": 22,
+      "total_likes": 38,
+      "ranking": 3
+    },
+    {
+      "category": "朝 (6-12時)",
+      "avg_likes": 0.94,
+      "tweet_count": 16,
+      "total_likes": 15,
+      "ranking": 4
+    }
+  ],
+  "weekday_vs_holiday": {
+    "weekday": {
+      "tweet_count": 53,
+      "avg_likes": 1.70,
+      "best_time_category": "夜・深夜 (22-6時)",
+      "best_time_category_avg": 2.27
+    },
+    "holiday": {
+      "tweet_count": 43,
+      "avg_likes": 2.19,
+      "best_time_category": "昼 (12-18時)",
+      "best_time_category_avg": 3.25
+    },
+    "holiday_advantage": "29%高いエンゲージメント"
+  },
+  "strategic_recommendations": {
+    "priority_times": [
+      "23時台（最優先）",
+      "休日の14時台",
+      "深夜2時台"
+    ],
+    "avoid_times": [
+      "6-12時（朝の時間帯）"
+    ],
+    "key_insights": [
+      "夜型フォロワーが多い",
+      "休日効果が高い（+29%）",
+      "昼休み効果（14時台）",
+      "朝の時間帯は避けるべき"
+    ]
+  },
+  "hourly_ranking": [
+    { "hour": 23, "avg_likes": 3.25, "count": 8 },
+    { "hour": 2, "avg_likes": 2.75, "count": 8 },
+    { "hour": 14, "avg_likes": 2.67, "count": 9 },
+    { "hour": 0, "avg_likes": 2.25, "count": 8 },
+    { "hour": 5, "avg_likes": 2.17, "count": 6 },
+    { "hour": 21, "avg_likes": 2.14, "count": 7 },
+    { "hour": 19, "avg_likes": 2.00, "count": 6 },
+    { "hour": 16, "avg_likes": 1.70, "count": 10 },
+    { "hour": 7, "avg_likes": 1.63, "count": 8 },
+    { "hour": 4, "avg_likes": 1.38, "count": 8 }
+  ]
+}

@@ -1,0 +1,194 @@
+{
+  "success_rate_analysis_summary": {
+    "analysis_date": "2025-09-29",
+    "analysis_method": "成功確率ベース分析",
+    "success_criteria": "いいね2以上",
+    "total_tweets": 96,
+    "success_tweets": 48,
+    "failure_tweets": 48,
+    "overall_success_rate": 50.0
+  },
+  "perfect_success_times": [
+    {
+      "day_type": "休日",
+      "hour": 2,
+      "success_rate": 100.0,
+      "success_count": 3,
+      "total_count": 3,
+      "confidence": "高"
+    },
+    {
+      "day_type": "休日", 
+      "hour": 5,
+      "success_rate": 100.0,
+      "success_count": 3,
+      "total_count": 3,
+      "confidence": "高"
+    }
+  ],
+  "high_success_times": [
+    {
+      "day_type": "平日",
+      "hour": 0,
+      "success_rate": 80.0,
+      "success_count": 4,
+      "total_count": 5,
+      "confidence": "高"
+    },
+    {
+      "day_type": "平日",
+      "hour": 2,
+      "success_rate": 80.0,
+      "success_count": 4,
+      "total_count": 5,
+      "confidence": "高"
+    },
+    {
+      "day_type": "平日",
+      "hour": 21,
+      "success_rate": 75.0,
+      "success_count": 3,
+      "total_count": 4,
+      "confidence": "中"
+    },
+    {
+      "day_type": "平日",
+      "hour": 23,
+      "success_rate": 75.0,
+      "success_count": 3,
+      "total_count": 4,
+      "confidence": "中"
+    },
+    {
+      "day_type": "休日",
+      "hour": 23,
+      "success_rate": 75.0,
+      "success_count": 3,
+      "total_count": 4,
+      "confidence": "中"
+    }
+  ],
+  "time_category_success_rates": {
+    "weekday": [
+      {
+        "category": "夜・深夜 (22-6時)",
+        "success_rate": 63.6,
+        "success_count": 14,
+        "total_count": 22,
+        "ranking": 1
+      },
+      {
+        "category": "夕方 (18-22時)",
+        "success_rate": 54.5,
+        "success_count": 6,
+        "total_count": 11,
+        "ranking": 2
+      },
+      {
+        "category": "昼 (12-18時)",
+        "success_rate": 33.3,
+        "success_count": 4,
+        "total_count": 12,
+        "ranking": 3
+      },
+      {
+        "category": "朝 (6-12時)",
+        "success_rate": 25.0,
+        "success_count": 2,
+        "total_count": 8,
+        "ranking": 4
+      }
+    ],
+    "holiday": [
+      {
+        "category": "夜・深夜 (22-6時)",
+        "success_rate": 68.8,
+        "success_count": 11,
+        "total_count": 16,
+        "ranking": 1
+      },
+      {
+        "category": "昼 (12-18時)",
+        "success_rate": 50.0,
+        "success_count": 4,
+        "total_count": 8,
+        "ranking": 2
+      },
+      {
+        "category": "夕方 (18-22時)",
+        "success_rate": 45.5,
+        "success_count": 5,
+        "total_count": 11,
+        "ranking": 3
+      },
+      {
+        "category": "朝 (6-12時)",
+        "success_rate": 25.0,
+        "success_count": 2,
+        "total_count": 8,
+        "ranking": 4
+      }
+    ]
+  },
+  "weekday_vs_holiday": {
+    "weekday_success_rate": 49.1,
+    "holiday_success_rate": 51.2,
+    "weekday_tweets": 53,
+    "holiday_tweets": 43,
+    "weekday_success": 26,
+    "holiday_success": 22
+  },
+  "avoid_times": [
+    {
+      "category": "朝 (6-12時)",
+      "failure_rate": 75.0,
+      "reason": "フォロワー不活性",
+      "recommendation": "完全回避"
+    },
+    {
+      "category": "昼 (12-18時)", 
+      "failure_rate": 60.0,
+      "reason": "競合多数",
+      "recommendation": "慎重な投稿"
+    }
+  ],
+  "strategic_recommendations": {
+    "tier1_times": [
+      "休日2時台（100%成功）",
+      "休日5時台（100%成功）",
+      "平日0時台（80%成功）",
+      "平日2時台（80%成功）"
+    ],
+    "tier2_times": [
+      "平日21時台（75%成功）",
+      "平日23時台（75%成功）",
+      "休日23時台（75%成功）"
+    ],
+    "avoid_completely": [
+      "朝6-12時（75%失敗率）"
+    ],
+    "key_insights": [
+      "休日深夜の完璧な成功率",
+      "平日深夜0-2時の安定性",
+      "朝時間帯の高い失敗率",
+      "成功の予測可能性向上"
+    ]
+  },
+  "comparison_with_average_analysis": {
+    "common_findings": [
+      "夜・深夜時間帯の優位性",
+      "朝時間帯の不調",
+      "休日の若干の優位性"
+    ],
+    "new_discoveries": [
+      "休日深夜の100%成功率",
+      "平日0時台の高い安定性",
+      "成功予測可能性の明確化"
+    ],
+    "strategic_advantages": [
+      "リスク管理の向上",
+      "外れ値に左右されない判断",
+      "より現実的な投稿計画"
+    ]
+  }
+}
