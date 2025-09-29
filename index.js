@@ -44,64 +44,71 @@ async function postAIGeneratedTweet() {
   }
 }
 
-// 日本時間5時07分 - AI生成ツイート
-cron.schedule('7 20 * * *', () => {
+
+// ========================================
+// 平日最適化スケジュール (成功率分析結果)
+// ========================================
+
+// 平日 0時15分 - 80%成功率
+cron.schedule('15 0 * * 1-5', () => {
   postAIGeneratedTweet();
+}, {
+  timezone: "Asia/Tokyo"
 });
 
-// 日本時間7時30分 - AI生成ツイート
-cron.schedule('30 22 * * *', () => {
+// 平日 2時30分 - 80%成功率
+cron.schedule('30 2 * * 1-5', () => {
   postAIGeneratedTweet();
+}, {
+  timezone: "Asia/Tokyo"
 });
 
-// 日本時間9時45分 - AI生成ツイート
-cron.schedule('45 0 * * *', () => {
+// 平日 21時45分 - 75%成功率
+cron.schedule('45 21 * * 1-5', () => {
   postAIGeneratedTweet();
+}, {
+  timezone: "Asia/Tokyo"
 });
 
-// 日本時間10時25分 - AI生成ツイート
-cron.schedule('25 1 * * *', () => {
+// 平日 23時10分 - 75%成功率
+cron.schedule('10 23 * * 1-5', () => {
   postAIGeneratedTweet();
+}, {
+  timezone: "Asia/Tokyo"
 });
 
-// 日本時間12時53分 - AI生成ツイート
-cron.schedule('53 3 * * *', () => {
+// ========================================
+// 休日最適化スケジュール (成功率分析結果)
+// ========================================
+
+// 休日 2時20分 - 100%成功率
+cron.schedule('20 2 * * 6,0', () => {
   postAIGeneratedTweet();
+}, {
+  timezone: "Asia/Tokyo"
 });
 
-// 日本時間14時22分 - AI生成ツイート
-cron.schedule('22 5 * * *', () => {
+// 休日 5時35分 - 100%成功率
+cron.schedule('35 5 * * 6,0', () => {
   postAIGeneratedTweet();
+}, {
+  timezone: "Asia/Tokyo"
 });
 
-// 日本時間15時48分 - AI生成ツイート
-cron.schedule('48 6 * * *', () => {
+// 休日 14時25分 - 昼休み効果
+cron.schedule('25 14 * * 6,0', () => {
   postAIGeneratedTweet();
+}, {
+  timezone: "Asia/Tokyo"
 });
 
-// 日本時間17時35分 - AI生成ツイート
-cron.schedule('35 8 * * *', () => {
+// 休日 23時50分 - 75%成功率
+cron.schedule('50 23 * * 6,0', () => {
   postAIGeneratedTweet();
-});
-
-// 日本時間19時12分 - AI生成ツイート
-cron.schedule('12 10 * * *', () => {
-  postAIGeneratedTweet();
-});
-
-// 日本時間20時16分 - AI生成ツイート
-cron.schedule('16 11 * * *', () => {
-  postAIGeneratedTweet();
-});
-
-// 日本時間22時02分 - AI生成ツイート
-cron.schedule('02 13 * * *', () => {
-  postAIGeneratedTweet();
-});
-
-// 日本時間1時01分 - AI生成ツイート
-cron.schedule('01 17 * * *', () => {
-  postAIGeneratedTweet();
+}, {
+  timezone: "Asia/Tokyo"
 });
 
 console.log('Bot started! Scheduled tweets are active.');
+console.log('📈 Added optimized weekday schedule based on success rate analysis.');
+console.log('🏖️ Added optimized weekend schedule with 100% success rate times.');
