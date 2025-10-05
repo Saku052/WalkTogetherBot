@@ -32,7 +32,10 @@ async function updateTrendingTopics() {
 
     if (result.success) {
       aiGenerator.updateTrendingTopics(result.topics);
-      console.log(`✅ Trending topics updated: ${result.topics.join(', ')}`);
+      console.log(`✅ Trending topics updated (${result.topics.length} topics from ${result.tweetCount} tweets):`);
+      result.topics.forEach((topic, index) => {
+        console.log(`   ${index + 1}. ${topic}`);
+      });
     } else {
       console.log('⚠️ No trending topics found, using base themes');
     }
@@ -132,7 +135,7 @@ cron.schedule('25 14 * * 6,0', () => {
 });
 
 // 休日 23時50分 - 75%成功率
-cron.schedule('59 21 * * 6,0', () => {
+cron.schedule('13 22 * * 6,0', () => {
   postAIGeneratedTweet();
 }, {
   timezone: "Asia/Tokyo"

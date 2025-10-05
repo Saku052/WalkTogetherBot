@@ -100,6 +100,15 @@ class AIGenerator {
       // トレンドを含むテーマリストから選択
       const themes = this.getThemes(promptType);
       const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+
+      // トレンドトピックが使用されたかログ出力
+      const isTrendingTopic = this.trendingTopics.includes(randomTheme);
+      if (isTrendingTopic) {
+        console.log(`🔥 Using TRENDING topic: "${randomTheme}"`);
+      } else {
+        console.log(`📝 Using base topic: "${randomTheme}"`);
+      }
+
       const prompt = this.buildPrompt(template, randomTheme);
 
       const response = await this.openai.chat.completions.create({
