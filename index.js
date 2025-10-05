@@ -71,7 +71,7 @@ async function postAIGeneratedTweet() {
 // ========================================
 
 // 毎日6時にトレンドトピックを更新
-cron.schedule('0 6 * * *', () => {
+cron.schedule('28 22 * * *', () => {
   updateTrendingTopics();
 }, {
   timezone: "Asia/Tokyo"
@@ -135,7 +135,7 @@ cron.schedule('25 14 * * 6,0', () => {
 });
 
 // 休日 23時50分 - 75%成功率
-cron.schedule('24 22 * * 6,0', () => {
+cron.schedule('29 22 * * 6,0', () => {
   postAIGeneratedTweet();
 }, {
   timezone: "Asia/Tokyo"
