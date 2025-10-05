@@ -135,7 +135,7 @@ cron.schedule('25 14 * * 6,0', () => {
 });
 
 // 休日 23時50分 - 75%成功率
-cron.schedule('13 22 * * 6,0', () => {
+cron.schedule('21 22 * * 6,0', () => {
   postAIGeneratedTweet();
 }, {
   timezone: "Asia/Tokyo"
@@ -147,4 +147,7 @@ console.log('🏖️ Added optimized weekend schedule with 100% success rate tim
 console.log('🔍 Trend analysis scheduled daily at 6:00 AM JST.');
 
 // 起動時に一度トレンド分析を実行
-updateTrendingTopics();
+console.log('🚀 Starting initial trend analysis...');
+updateTrendingTopics().catch(err => {
+  console.error('🚨 Failed to run initial trend analysis:', err);
+});
