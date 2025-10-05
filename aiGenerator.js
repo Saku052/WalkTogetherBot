@@ -6,7 +6,7 @@ class AIGenerator {
     this.openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
-    
+
     this.promptTemplates = {
       rakuten_mobile: {
         system: `あなたはゲーム開発を趣味とする大学生です。日々のゲーム開発の学び、気付き、時には悩みや達成をTwitterで呟きます：
@@ -16,7 +16,7 @@ class AIGenerator {
 - 専門用語は避け、ゲーム開発に興味のある人なら誰でも理解できる言葉を選ぶ`,
         themes: [
           "ステージ制作",
-          "プロダクト開発の楽しさ", 
+          "プロダクト開発の楽しさ",
           "配色の難しさ",
           "ゲームデザインの難しさ",
           "アクションの追加",
@@ -47,9 +47,47 @@ class AIGenerator {
           "3Dオブジェクトとアニメーション",
           "ダークモード対応設計",
           "音声UIとハンズフリー操作",
+        ],
+        exampleTweets: [
+          "僕は結局Claude Codeばかり使っています。理由としては\n・Claude Codeで困ることが現状ない(ポンコツ改善された気がする)\n・Claude Codeの方がコード出力が早い",
+          "グーグル画像生成AI「Nano Banana」超便利に使える神アプリ AI開発で続々登場\nGoogle AI StudioのBuildを利用することで、Nano Bananaと連携した便利で強力なアプリを簡単に作れることを紹介します。文中で触れた筆者作成のアプリリンクも最後に公開しています。",
+          "最近、ゲームのバランステストしてみたんだけど、思ったより敵が強すぎて笑った😂😊調整が楽しい！試行錯誤しながら、プレイヤーの気持ちを考えるって大事だね〜",
+          "GitHubの効率的活用法を探してるんだけど、やっぱりブランチ活用がめっちゃ便利✨作業ごとに分けておくと、バグ修正も楽チンなんだよね!みんなも試してみて〜!",
+          "就活の時GitHub見られるって聞いたから結構頑張って継続してきたつもりだけど、全部埋まってる人のツイート見つけて震えてる",
+          "ソフトウェアエンジニア職は鬱になりやすいと言われるが鬱になりやすい奴がエンジニア職（プログラマ）を目指しがちという方がおそらく正しい気がする...",
+          "ふと思ってんけど、バイブコーティングが普通になってきて、学習量の問題が改善されてくると、もしかすると静的言語の方が有利になってこない？\nもしくはそれに特化した言語とかもう作ってる人いそうやな。多分今後はハルシネーション問題も少なくなって来そうやし。",
+          "ステージ制作で壁にぶつかった💦レベルデザインって、見た目だけじゃなくてプレイヤーの動きも考えなきゃいけないんだよね！試行錯誤して、友達にプレイしてもらったら改善点が見えてきた✨やっぱり人の意見って大事だね！"
         ]
       }
     };
+
+    // トレンドトピックを保存
+    this.trendingTopics = [];
+  }
+
+  /**
+   * トレンドトピックを更新
+   * @param {string[]} topics - 新しいトレンドトピックの配列
+   */
+  updateTrendingTopics(topics) {
+    this.trendingTopics = topics;
+    console.log('Updated trending topics:', topics);
+  }
+
+  /**
+   * 現在のテーマリストを取得（トレンド優先）
+   * @param {string} promptType - プロンプトタイプ
+   * @returns {string[]} テーマの配列
+   */
+  getThemes(promptType = 'rakuten_mobile') {
+    const baseThemes = this.promptTemplates[promptType].themes;
+
+    // トレンドトピックがあれば優先的に配置（100%の確率で選ばれる - 検証用）
+    if (this.trendingTopics.length > 0) {
+      return this.trendingTopics;
+    }
+
+    return baseThemes;
   }
 
   async generateTweet(promptType = 'rakuten_mobile') {
@@ -59,7 +97,9 @@ class AIGenerator {
         throw new Error(`Unknown prompt type: ${promptType}`);
       }
 
-      const randomTheme = template.themes[Math.floor(Math.random() * template.themes.length)];
+      // トレンドを含むテーマリストから選択
+      const themes = this.getThemes(promptType);
+      const randomTheme = themes[Math.floor(Math.random() * themes.length)];
       const prompt = this.buildPrompt(template, randomTheme);
 
       const response = await this.openai.chat.completions.create({
@@ -98,20 +138,13 @@ class AIGenerator {
   }
 
   buildPrompt(template, theme) {
+    const examplesList = template.exampleTweets
+      .map((tweet, index) => `${index + 1}. ${tweet}`)
+      .join('\n\n');
+
     return `テーマ「${theme}」に基づいて、ツイート文を1つ生成してください。
 以下の例文のような構成にしてください：
-  [僕は結局Claude Codeばかり使っています。理由としては
-・Claude Codeで困ることが現状ない(ポンコツ改善された気がする)
-・Claude Codeの方がコード出力が早い],
-[グーグル画像生成AI「Nano Banana」超便利に使える“神アプリ”　AI開発で続々登場
-Google AI StudioのBuildを利用することで、Nano Bananaと連携した便利で強力なアプリを簡単に作れることを紹介します。文中で触れた筆者作成のアプリリンクも最後に公開しています。],
-[最近、ゲームのバランステストしてみたんだけど、思ったより敵が強すぎて笑った😂😊調整が楽しい！試行錯誤しながら、プレイヤーの気持ちを考えるって大事だね〜],
-[GitHubの効率的活用法を探してるんだけど、やっぱりブランチ活用がめっちゃ便利✨作業ごとに分けておくと、バグ修正も楽チンなんだよね！みんなも試してみて〜！],
-[就活の時GitHub見られるって聞いたから結構頑張って継続してきたつもりだけど、全部埋まってる人のツイート見つけて震えてる],
-[ソフトウェアエンジニア職は鬱になりやすいと言われるが鬱になりやすい奴がエンジニア職（プログラマ）を目指しがちという方がおそらく正しい気がする...],
-[ふと思ってんけど、バイブコーティングが普通になってきて、学習量の問題が改善されてくると、もしかすると静的言語の方が有利になってこない？
-もしくはそれに特化した言語とかもう作ってる人いそうやな。多分今後はハルシネーション問題も少なくなって来そうやし。],
-[ステージ制作で壁にぶつかった💦レベルデザインって、見た目だけじゃなくてプレイヤーの動きも考えなきゃいけないんだよね！試行錯誤して、友達にプレイしてもらったら改善点が見えてきた✨やっぱり人の意見って大事だね！],
+${examplesList}
 `;
   }
 

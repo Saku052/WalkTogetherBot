@@ -3,6 +3,7 @@ const { TwitterApi } = require('twitter-api-v2');
 const cron = require('node-cron');
 const tweetMessages = require('./tweets');
 const AIGenerator = require('./aiGenerator');
+const TrendAnalyzer = require('./trendAnalyzer');
 
 const client = new TwitterApi({
   appKey: process.env.API_KEY,
@@ -13,6 +14,7 @@ const client = new TwitterApi({
 
 const rwClient = client.readWrite;
 const aiGenerator = new AIGenerator();
+const trendAnalyzer = new TrendAnalyzer(client.readOnly);
 
 async function postTweet(content) {
   try {
@@ -23,11 +25,27 @@ async function postTweet(content) {
   }
 }
 
+async function updateTrendingTopics() {
+  try {
+    console.log('🔍 Updating trending topics...');
+    const result = await trendAnalyzer.analyzeTrends(['ゲーム開発', 'ゲーム制作', 'プログラミング']);
+
+    if (result.success) {
+      aiGenerator.updateTrendingTopics(result.topics);
+      console.log(`✅ Trending topics updated: ${result.topics.join(', ')}`);
+    } else {
+      console.log('⚠️ No trending topics found, using base themes');
+    }
+  } catch (error) {
+    console.error('❌ Error updating trending topics:', error);
+  }
+}
+
 async function postAIGeneratedTweet() {
   try {
     console.log('Generating AI tweet...');
     const result = await aiGenerator.generateTweet();
-    
+
     if (result.success) {
       await postTweet(result.content);
       console.log(`AI Generated Tweet Success - Theme: ${result.theme}`);
@@ -44,6 +62,17 @@ async function postAIGeneratedTweet() {
   }
 }
 
+
+// ========================================
+// トレンド分析スケジュール
+// ========================================
+
+// 毎日6時にトレンドトピックを更新
+cron.schedule('0 6 * * *', () => {
+  updateTrendingTopics();
+}, {
+  timezone: "Asia/Tokyo"
+});
 
 // ========================================
 // 平日最適化スケジュール (成功率分析結果)
@@ -64,7 +93,7 @@ cron.schedule('30 2 * * 1-5', () => {
 });
 
 // 平日 21時45分 - 75%成功率
-cron.schedule('45 21 * * 1-5', () => {
+cron.schedule('48 21 * * 1-5', () => {
   postAIGeneratedTweet();
 }, {
   timezone: "Asia/Tokyo"
@@ -112,3 +141,7 @@ cron.schedule('50 23 * * 6,0', () => {
 console.log('Bot started! Scheduled tweets are active.');
 console.log('📈 Added optimized weekday schedule based on success rate analysis.');
 console.log('🏖️ Added optimized weekend schedule with 100% success rate times.');
+console.log('🔍 Trend analysis scheduled daily at 6:00 AM JST.');
+
+// 起動時に一度トレンド分析を実行
+updateTrendingTopics();
