@@ -70,12 +70,13 @@ async function postAIGeneratedTweet() {
 // トレンド分析スケジュール
 // ========================================
 
-// 毎日6時にトレンドトピックを更新
-cron.schedule('28 22 * * *', () => {
-  updateTrendingTopics();
-}, {
-  timezone: "Asia/Tokyo"
-});
+// 毎日6時にトレンドトピックを更新（現在は手動設定のためコメントアウト）
+// Twitter API Free プランでは検索APIが使えないため無効化
+// cron.schedule('0 6 * * *', () => {
+//   updateTrendingTopics();
+// }, {
+//   timezone: "Asia/Tokyo"
+// });
 
 // ========================================
 // 平日最適化スケジュール (成功率分析結果)
@@ -146,8 +147,14 @@ console.log('📈 Added optimized weekday schedule based on success rate analysi
 console.log('🏖️ Added optimized weekend schedule with 100% success rate times.');
 console.log('🔍 Trend analysis scheduled daily at 6:00 AM JST.');
 
-// 起動時に一度トレンド分析を実行
-console.log('🚀 Starting initial trend analysis...');
-updateTrendingTopics().catch(err => {
-  console.error('🚨 Failed to run initial trend analysis:', err);
-});
+// 起動時に手動トレンドトピックを設定（Twitter API制限のため）
+console.log('🚀 Setting manual trending topics...');
+const manualTrendingTopics = [
+  "Unity 6",
+  "Godot 4.3",
+  "インディーゲーム開発",
+  "Unreal Engine 5",
+  "ゲームジャム"
+];
+aiGenerator.updateTrendingTopics(manualTrendingTopics);
+console.log(`✅ Manual trending topics set: ${manualTrendingTopics.join(', ')}`);
