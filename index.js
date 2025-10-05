@@ -93,7 +93,7 @@ cron.schedule('30 2 * * 1-5', () => {
 });
 
 // 平日 21時45分 - 75%成功率
-cron.schedule('48 21 * * 1-5', () => {
+cron.schedule('53 21 * * 1-5', () => {
   postAIGeneratedTweet();
 }, {
   timezone: "Asia/Tokyo"
