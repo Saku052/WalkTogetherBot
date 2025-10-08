@@ -9,8 +9,8 @@ class AIGenerator {
       apiKey: process.env.OPENAI_API_KEY,
     });
 
-    // トレンドトピックファイルのパス
-    this.trendingTopicsFile = path.join(__dirname, 'trendingTopics.json');
+    // トレンドトピックファイルのパス（Railway Volumeで永続化）
+    this.trendingTopicsFile = path.join(__dirname, 'data', 'trendingTopics.json');
 
     this.promptTemplates = {
       rakuten_mobile: {

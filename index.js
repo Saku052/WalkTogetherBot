@@ -18,8 +18,8 @@ const rwClient = client.readWrite;
 const aiGenerator = new AIGenerator();
 const trendAnalyzer = new TrendAnalyzer(client.readOnly);
 
-// トレンドトピックファイルのパス
-const TRENDING_TOPICS_FILE = path.join(__dirname, 'trendingTopics.json');
+// トレンドトピックファイルのパス（Railway Volumeで永続化）
+const TRENDING_TOPICS_FILE = path.join(__dirname, 'data', 'trendingTopics.json');
 
 /**
  * トレンドトピックをファイルから読み込む
