@@ -115,7 +115,7 @@ async function postAIGeneratedTweet() {
 // ========================================
 
 // 毎時0分にトレンドトピックを更新（Twitter API制限に配慮）
-cron.schedule('06 * * * *', () => {
+cron.schedule('23 * * * *', () => {
   updateTrendingTopics();
 }, {
   timezone: "Asia/Tokyo"
@@ -193,6 +193,18 @@ console.log('🔍 Trend analysis scheduled hourly.');
 // 起動時にファイルからトレンドトピックを読み込む
 (async () => {
   console.log('🚀 Loading trending topics from file...');
+  console.log(`📂 File path: ${TRENDING_TOPICS_FILE}`);
+
+  // ファイルの存在確認とパーミッションチェック
+  try {
+    await fs.access(TRENDING_TOPICS_FILE);
+    console.log('✅ File exists and is accessible');
+    const fileContent = await fs.readFile(TRENDING_TOPICS_FILE, 'utf8');
+    console.log('📄 File content:', fileContent);
+  } catch (error) {
+    console.log('⚠️ File access check failed:', error.message);
+  }
+
   const savedTopics = await loadTrendingTopics();
   if (savedTopics.length > 0) {
     aiGenerator.updateTrendingTopics(savedTopics);
