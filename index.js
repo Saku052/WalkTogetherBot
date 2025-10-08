@@ -115,7 +115,7 @@ async function postAIGeneratedTweet() {
 // ========================================
 
 // 毎時0分にトレンドトピックを更新（Twitter API制限に配慮）
-cron.schedule('23 * * * *', () => {
+cron.schedule('30 * * * *', () => {
   updateTrendingTopics();
 }, {
   timezone: "Asia/Tokyo"
@@ -195,14 +195,34 @@ console.log('🔍 Trend analysis scheduled hourly.');
   console.log('🚀 Loading trending topics from file...');
   console.log(`📂 File path: ${TRENDING_TOPICS_FILE}`);
 
-  // ファイルの存在確認とパーミッションチェック
+  // dataディレクトリが存在しない場合は作成
+  const dataDir = path.dirname(TRENDING_TOPICS_FILE);
+  try {
+    await fs.mkdir(dataDir, { recursive: true });
+    console.log('✅ Data directory ensured');
+  } catch (error) {
+    console.error('Failed to create data directory:', error);
+  }
+
+  // ファイルが存在しない場合は初期データで作成
   try {
     await fs.access(TRENDING_TOPICS_FILE);
     console.log('✅ File exists and is accessible');
-    const fileContent = await fs.readFile(TRENDING_TOPICS_FILE, 'utf8');
-    console.log('📄 File content:', fileContent);
   } catch (error) {
-    console.log('⚠️ File access check failed:', error.message);
+    console.log('⚠️ File does not exist, creating with default topics...');
+    const defaultTopics = {
+      topics: [
+        "Unity 6",
+        "Godot 4.3",
+        "インディーゲーム開発",
+        "Unreal Engine 5",
+        "ゲームジャム"
+      ],
+      lastUpdated: new Date().toISOString(),
+      source: "default"
+    };
+    await fs.writeFile(TRENDING_TOPICS_FILE, JSON.stringify(defaultTopics, null, 2), 'utf8');
+    console.log('✅ Default trending topics file created');
   }
 
   const savedTopics = await loadTrendingTopics();
