@@ -1,6 +1,8 @@
 require('dotenv').config();
 const { TwitterApi } = require('twitter-api-v2');
 const cron = require('node-cron');
+const fs = require('fs').promises;
+const path = require('path');
 const tweetMessages = require('./tweets');
 const AIGenerator = require('./aiGenerator');
 const TrendAnalyzer = require('./trendAnalyzer');
@@ -15,6 +17,43 @@ const client = new TwitterApi({
 const rwClient = client.readWrite;
 const aiGenerator = new AIGenerator();
 const trendAnalyzer = new TrendAnalyzer(client.readOnly);
+
+// トレンドトピックファイルのパス
+const TRENDING_TOPICS_FILE = path.join(__dirname, 'trendingTopics.json');
+
+/**
+ * トレンドトピックをファイルから読み込む
+ * @returns {Promise<string[]>} トレンドトピックの配列
+ */
+async function loadTrendingTopics() {
+  try {
+    const data = await fs.readFile(TRENDING_TOPICS_FILE, 'utf8');
+    const parsed = JSON.parse(data);
+    return parsed.topics || [];
+  } catch (error) {
+    console.error('Failed to load trending topics from file:', error);
+    return [];
+  }
+}
+
+/**
+ * トレンドトピックをファイルに保存
+ * @param {string[]} topics - トレンドトピックの配列
+ * @param {string} source - トピックのソース ('twitter' または 'manual')
+ */
+async function saveTrendingTopics(topics, source = 'twitter') {
+  try {
+    const data = {
+      topics,
+      lastUpdated: new Date().toISOString(),
+      source
+    };
+    await fs.writeFile(TRENDING_TOPICS_FILE, JSON.stringify(data, null, 2), 'utf8');
+    console.log(`✅ Trending topics saved to file (${topics.length} topics)`);
+  } catch (error) {
+    console.error('Failed to save trending topics to file:', error);
+  }
+}
 
 async function postTweet(content) {
   try {
@@ -31,7 +70,12 @@ async function updateTrendingTopics() {
     const result = await trendAnalyzer.analyzeTrends(['ゲーム開発', 'ゲーム制作', 'プログラミング']);
 
     if (result.success) {
+      // メモリに保存
       aiGenerator.updateTrendingTopics(result.topics);
+
+      // ファイルに保存
+      await saveTrendingTopics(result.topics, 'twitter');
+
       console.log(`✅ Trending topics updated (${result.topics.length} topics from ${result.tweetCount} tweets):`);
       result.topics.forEach((topic, index) => {
         console.log(`   ${index + 1}. ${topic}`);
@@ -70,13 +114,12 @@ async function postAIGeneratedTweet() {
 // トレンド分析スケジュール
 // ========================================
 
-// 毎日6時にトレンドトピックを更新（現在は手動設定のためコメントアウト）
-// Twitter API Free プランでは検索APIが使えないため無効化
-// cron.schedule('0 6 * * *', () => {
-//   updateTrendingTopics();
-// }, {
-//   timezone: "Asia/Tokyo"
-// });
+// 毎時0分にトレンドトピックを更新（Twitter API制限に配慮）
+cron.schedule('30 * * * *', () => {
+  updateTrendingTopics();
+}, {
+  timezone: "Asia/Tokyo"
+});
 
 // ========================================
 // 平日最適化スケジュール (成功率分析結果)
@@ -145,16 +188,16 @@ cron.schedule('29 22 * * 6,0', () => {
 console.log('Bot started! Scheduled tweets are active.');
 console.log('📈 Added optimized weekday schedule based on success rate analysis.');
 console.log('🏖️ Added optimized weekend schedule with 100% success rate times.');
-console.log('🔍 Trend analysis scheduled daily at 6:00 AM JST.');
+console.log('🔍 Trend analysis scheduled hourly.');
 
-// 起動時に手動トレンドトピックを設定（Twitter API制限のため）
-console.log('🚀 Setting manual trending topics...');
-const manualTrendingTopics = [
-  "Unity 6",
-  "Godot 4.3",
-  "インディーゲーム開発",
-  "Unreal Engine 5",
-  "ゲームジャム"
-];
-aiGenerator.updateTrendingTopics(manualTrendingTopics);
-console.log(`✅ Manual trending topics set: ${manualTrendingTopics.join(', ')}`);
+// 起動時にファイルからトレンドトピックを読み込む
+(async () => {
+  console.log('🚀 Loading trending topics from file...');
+  const savedTopics = await loadTrendingTopics();
+  if (savedTopics.length > 0) {
+    aiGenerator.updateTrendingTopics(savedTopics);
+    console.log(`✅ Trending topics loaded from file: ${savedTopics.join(', ')}`);
+  } else {
+    console.log('⚠️ No saved trending topics found, using defaults');
+  }
+})();
