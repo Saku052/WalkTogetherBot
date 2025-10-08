@@ -115,7 +115,7 @@ async function postAIGeneratedTweet() {
 // ========================================
 
 // 毎時0分にトレンドトピックを更新（Twitter API制限に配慮）
-cron.schedule('30 * * * *', () => {
+cron.schedule('06 * * * *', () => {
   updateTrendingTopics();
 }, {
   timezone: "Asia/Tokyo"
