@@ -3,6 +3,7 @@ const { TwitterApi } = require('twitter-api-v2');
 const cron = require('node-cron');
 const tweetMessages = require('./tweets');
 const AIGenerator = require('./aiGenerator');
+require('./discordBot');
 
 const client = new TwitterApi({
   appKey: process.env.API_KEY,
