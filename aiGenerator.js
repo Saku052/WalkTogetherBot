@@ -10,55 +10,6 @@ class AIGenerator {
     });
 
     this.characterStatePath = path.join(__dirname, 'character_state.json');
-
-    this.promptTemplates = {
-      saku: {
-        themes: [
-          "ステージ制作",
-          "プロダクト開発の楽しさ",
-          "配色の難しさ",
-          "ゲームデザインの難しさ",
-          "アクションの追加",
-          "AIとゲーム開発",
-          "エラーのありがたさ",
-          "インディーゲームのマルチプレイヤー対応",
-          "VR/ARゲーム開発",
-          "モバイルゲーム最適化",
-          "ゲームAIの実装",
-          "リアルタイムレンダリング技術",
-          "ゲーム内経済システム設計",
-          "個人開発でのパブリッシング戦略",
-          "ゲームエンジンの選び方",
-          "デバッグとプロファイリング技術",
-          "ChatGPT/Claude活用プログラミング",
-          "AI生成コンテンツの品質向上",
-          "ローカルAIモデルの活用",
-          "AIプロンプトエンジニアリング",
-          "Python×AI開発の基礎",
-          "JavaScript/TypeScript実践",
-          "React Server Components活用",
-          "フロントエンド最新フレームワーク",
-          "APIとマイクロサービス設計",
-          "Git/GitHub効率的活用法",
-          "コードレビューとチーム開発",
-          "テスト駆動開発（TDD）",
-          "AIを活用したパーソナライズUI",
-          "3Dオブジェクトとアニメーション",
-          "ダークモード対応設計",
-          "音声UIとハンズフリー操作",
-          "コンピューターネットワークの仕組み",
-          "UXデザインの考え方",
-          "レベルデザインの理論",
-        ],
-        exampleTweets: [
-          "UIのトランジション、100回調整してやっと納得いった。でもなんか完成した瞬間に次のことが気になり始めた。",
-          "ネットワークの仕組みを調べてたら気づいたら3時間経ってた。パケットの話、なんか好きなんだよね。",
-          "レベルデザインって結局プレイヤーの動線を設計することなんだけど、それって全部UXの話と同じじゃんってなった。",
-          "作ったものへの反応が薄いとやっぱへこむ。へこむけどまあ作り続けるんだよな。",
-          "AIに任せるか自分で書くか、毎回悩む。任せると早いけど、自分で書いた方が後で理解できてる。",
-        ]
-      }
-    };
   }
 
   loadCharacterState() {
@@ -120,6 +71,7 @@ class AIGenerator {
 - 絵文字は0〜1個。多用しない
 - 「！」より「。」で終わることが多い
 - 自己ツッコミを（）で入れることがある
+- 関連するハッシュタグを2つ付ける
 - 140文字以内
 
 【弱さ】
@@ -129,7 +81,6 @@ class AIGenerator {
 【NGライン】
 - 過度に前向きな締め方はしない
 - タメ口で一般論を語りすぎない
-- ハッシュタグは付けない
 
 【現在の状態】
 気分: ${state.mood}
@@ -139,22 +90,12 @@ ${happeningsDesc}
 ${blockDesc}`.trim();
   }
 
-  async generateTweet(promptType = 'saku') {
+  async generateTweet() {
     try {
-      const template = this.promptTemplates[promptType];
-      if (!template) {
-        throw new Error(`Unknown prompt type: ${promptType}`);
-      }
-
       const state = this.loadCharacterState();
 
-      // last_tweet_themeと同じテーマを避ける
-      const themes = template.themes.filter(t => t !== state.last_tweet_theme);
-      const randomTheme = themes[Math.floor(Math.random() * themes.length)];
-      console.log(`📝 Using topic: "${randomTheme}"`);
-
       const systemPrompt = this.buildSystemPrompt(state);
-      const userPrompt = this.buildPrompt(template, randomTheme);
+      const userPrompt = this.buildPrompt(state);
 
       const response = await this.openai.chat.completions.create({
         model: "gpt-4o-mini",
@@ -168,15 +109,10 @@ ${blockDesc}`.trim();
 
       const generatedContent = response.choices[0].message.content.trim();
 
-      // last_tweet_themeを更新
-      this.updateLastTheme(randomTheme);
-
       return {
         success: true,
         content: generatedContent,
         timestamp: new Date(),
-        promptType: promptType,
-        theme: randomTheme
       };
 
     } catch (error) {
@@ -185,25 +121,14 @@ ${blockDesc}`.trim();
     }
   }
 
-  buildPrompt(template, theme) {
-    const examplesList = template.exampleTweets
-      .map((tweet, index) => `${index + 1}. ${tweet}`)
-      .join('\n\n');
+  buildPrompt(state) {
+    const avoidNote = state.last_tweet_theme
+      ? `直前のツイートは「${state.last_tweet_theme}」の話題だったので、同じ話題は避けてください。`
+      : "";
 
-    return `テーマ「${theme}」に基づいて、さくとしてツイートを1つ生成してください。
-以下の例文のトーンを参考にしてください：
-${examplesList}
-`;
-  }
-
-  updateLastTheme(theme) {
-    try {
-      const state = this.loadCharacterState();
-      state.last_tweet_theme = theme;
-      fs.writeFileSync(this.characterStatePath, JSON.stringify(state, null, 2), 'utf8');
-    } catch (err) {
-      console.error('Failed to update last_tweet_theme:', err.message);
-    }
+    return `さくとして、今の自分の状態から自然に出てくる話題でツイートを1つ生成してください。
+話題は current_obsession や recent_happenings から自由に選んでください。
+${avoidNote}`.trim();
   }
 
   handleApiError(error) {
@@ -212,13 +137,12 @@ ${examplesList}
       content: "なんかAPIがこけた。まあそういう日もある。",
       error: error.message,
       timestamp: new Date(),
-      promptType: 'fallback'
     };
   }
 
   async testConnection() {
     try {
-      const response = await this.openai.chat.completions.create({
+      await this.openai.chat.completions.create({
         model: "gpt-4o-mini",
         messages: [{ role: "user", content: "こんにちは" }],
         max_tokens: 10
