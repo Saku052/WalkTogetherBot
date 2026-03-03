@@ -1,16 +1,11 @@
 require('dotenv').config();
 const OpenAI = require('openai');
-const fs = require('fs').promises;
-const path = require('path');
 
 class AIGenerator {
   constructor() {
     this.openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
-
-    // トレンドトピックファイルのパス（Railway Volumeで永続化）
-    this.trendingTopicsFile = path.join(__dirname, 'data', 'trendingTopics.json');
 
     this.promptTemplates = {
       rakuten_mobile: {
@@ -65,58 +60,6 @@ class AIGenerator {
         ]
       }
     };
-
-    // トレンドトピックを保存
-    this.trendingTopics = [];
-  }
-
-  /**
-   * トレンドトピックを更新
-   * @param {string[]} topics - 新しいトレンドトピックの配列
-   */
-  updateTrendingTopics(topics) {
-    this.trendingTopics = topics;
-    console.log('Updated trending topics:', topics);
-  }
-
-  /**
-   * ファイルからトレンドトピックを読み込む
-   * @returns {Promise<string[]>} トレンドトピックの配列
-   */
-  async loadTrendingTopicsFromFile() {
-    try {
-      const data = await fs.readFile(this.trendingTopicsFile, 'utf8');
-      const parsed = JSON.parse(data);
-      return parsed.topics || [];
-    } catch (error) {
-      console.error('Failed to load trending topics from file:', error);
-      return [];
-    }
-  }
-
-  /**
-   * 現在のテーマリストを取得（トレンド優先）
-   * @param {string} promptType - プロンプトタイプ
-   * @returns {Promise<string[]>} テーマの配列
-   */
-  async getThemes(promptType = 'rakuten_mobile') {
-    const baseThemes = this.promptTemplates[promptType].themes;
-
-    // メモリにトレンドトピックがない場合、ファイルから読み込む
-    if (this.trendingTopics.length === 0) {
-      const savedTopics = await this.loadTrendingTopicsFromFile();
-      if (savedTopics.length > 0) {
-        this.trendingTopics = savedTopics;
-        console.log(`📂 Loaded trending topics from file: ${savedTopics.join(', ')}`);
-      }
-    }
-
-    // トレンドトピックがあれば優先的に配置（100%の確率で選ばれる - 検証用）
-    if (this.trendingTopics.length > 0) {
-      return this.trendingTopics;
-    }
-
-    return baseThemes;
   }
 
   async generateTweet(promptType = 'rakuten_mobile') {
@@ -126,17 +69,9 @@ class AIGenerator {
         throw new Error(`Unknown prompt type: ${promptType}`);
       }
 
-      // トレンドを含むテーマリストから選択
-      const themes = await this.getThemes(promptType);
+      const themes = template.themes;
       const randomTheme = themes[Math.floor(Math.random() * themes.length)];
-
-      // トレンドトピックが使用されたかログ出力
-      const isTrendingTopic = this.trendingTopics.includes(randomTheme);
-      if (isTrendingTopic) {
-        console.log(`🔥 Using TRENDING topic: "${randomTheme}"`);
-      } else {
-        console.log(`📝 Using base topic: "${randomTheme}"`);
-      }
+      console.log(`📝 Using topic: "${randomTheme}"`);
 
       const prompt = this.buildPrompt(template, randomTheme);
 
