@@ -1,5 +1,7 @@
 require('dotenv').config();
 const OpenAI = require('openai');
+const fs = require('fs');
+const path = require('path');
 
 class AIGenerator {
   constructor() {
@@ -7,13 +9,10 @@ class AIGenerator {
       apiKey: process.env.OPENAI_API_KEY,
     });
 
+    this.characterStatePath = path.join(__dirname, 'character_state.json');
+
     this.promptTemplates = {
-      rakuten_mobile: {
-        system: `あなたはゲーム開発を趣味とする大学生です。日々のゲーム開発の学び、気付き、時には悩みや達成をTwitterで呟きます：
-- ツイートは140文字以内(ハッシュタグ含めて)
-- 口語調で、大学生らしい自然な表現、だけどギャルの様な軽さ/可愛さも多少だけ織り交ぜる事を心がける
-- ハッシュタグを2-3個含める(例:#ゲーム開発 #ゲーム制作 #プログラミング）
-- 専門用語は避け、ゲーム開発に興味のある人なら誰でも理解できる言葉を選ぶ`,
+      saku: {
         themes: [
           "ステージ制作",
           "プロダクト開発の楽しさ",
@@ -47,58 +46,134 @@ class AIGenerator {
           "3Dオブジェクトとアニメーション",
           "ダークモード対応設計",
           "音声UIとハンズフリー操作",
+          "コンピューターネットワークの仕組み",
+          "UXデザインの考え方",
+          "レベルデザインの理論",
         ],
         exampleTweets: [
-          "僕は結局Claude Codeばかり使っています。理由としては\n・Claude Codeで困ることが現状ない(ポンコツ改善された気がする)\n・Claude Codeの方がコード出力が早い",
-          "グーグル画像生成AI「Nano Banana」超便利に使える神アプリ AI開発で続々登場\nGoogle AI StudioのBuildを利用することで、Nano Bananaと連携した便利で強力なアプリを簡単に作れることを紹介します。文中で触れた筆者作成のアプリリンクも最後に公開しています。",
-          "最近、ゲームのバランステストしてみたんだけど、思ったより敵が強すぎて笑った😂😊調整が楽しい！試行錯誤しながら、プレイヤーの気持ちを考えるって大事だね〜",
-          "GitHubの効率的活用法を探してるんだけど、やっぱりブランチ活用がめっちゃ便利✨作業ごとに分けておくと、バグ修正も楽チンなんだよね!みんなも試してみて〜!",
-          "就活の時GitHub見られるって聞いたから結構頑張って継続してきたつもりだけど、全部埋まってる人のツイート見つけて震えてる",
-          "ソフトウェアエンジニア職は鬱になりやすいと言われるが鬱になりやすい奴がエンジニア職（プログラマ）を目指しがちという方がおそらく正しい気がする...",
-          "ふと思ってんけど、バイブコーティングが普通になってきて、学習量の問題が改善されてくると、もしかすると静的言語の方が有利になってこない？\nもしくはそれに特化した言語とかもう作ってる人いそうやな。多分今後はハルシネーション問題も少なくなって来そうやし。",
-          "ステージ制作で壁にぶつかった💦レベルデザインって、見た目だけじゃなくてプレイヤーの動きも考えなきゃいけないんだよね！試行錯誤して、友達にプレイしてもらったら改善点が見えてきた✨やっぱり人の意見って大事だね！"
+          "UIのトランジション、100回調整してやっと納得いった。でもなんか完成した瞬間に次のことが気になり始めた。",
+          "ネットワークの仕組みを調べてたら気づいたら3時間経ってた。パケットの話、なんか好きなんだよね。",
+          "レベルデザインって結局プレイヤーの動線を設計することなんだけど、それって全部UXの話と同じじゃんってなった。",
+          "作ったものへの反応が薄いとやっぱへこむ。へこむけどまあ作り続けるんだよな。",
+          "AIに任せるか自分で書くか、毎回悩む。任せると早いけど、自分で書いた方が後で理解できてる。",
         ]
       }
     };
   }
 
-  async generateTweet(promptType = 'rakuten_mobile') {
+  loadCharacterState() {
+    try {
+      const raw = fs.readFileSync(this.characterStatePath, 'utf8');
+      return JSON.parse(raw);
+    } catch {
+      return {
+        mood: "ほわほわ",
+        energy: 3,
+        current_obsession: "",
+        recent_happenings: [],
+        last_tweet_theme: "",
+        creative_block: false
+      };
+    }
+  }
+
+  buildSystemPrompt(state) {
+    const energyDesc = state.energy <= 2
+      ? "今日はちょっと疲れ気味で、短めの言葉になりがち。"
+      : state.energy >= 5
+      ? "テンション高め。話が脱線しやすい。"
+      : "普通のテンション。";
+
+    const blockDesc = state.creative_block
+      ? "最近スランプ気味で、作業が進んでいない感覚がある。"
+      : "";
+
+    const obsessionDesc = state.current_obsession
+      ? `最近は「${state.current_obsession}」に興味が向いている。`
+      : "";
+
+    const happeningsDesc = state.recent_happenings.length > 0
+      ? `直近の出来事: ${state.recent_happenings.join('、')}。`
+      : "";
+
+    return `あなたは「さく」という名前のゲームクリエイターです。
+
+【アイデンティティ】
+職業: 個人開発のゲームクリエイター
+一言で言うと: 作ることが好きで、完成させるのが苦手な人
+
+【知識・興味領域】
+ゲーム開発、レベルデザイン、UXデザイン、AI、システム開発、コンピューターネットワーク
+
+【価値観の核】
+- 技術は手段であって目的じゃない（でもつい深掘りしてしまう）
+- 作ったものは誰かに届いてほしい
+- 面白いと思ったことは全部拾う
+
+【思考パターン】
+- 話が脱線しやすく、自分でそれに気づいて戻ることがある
+- 「てかさ、」「なんか、」「あれ何だっけ」が自然に出る
+- 気になったことはとことん調べる、でも急に別のことに興味が移る
+
+【文体ルール】
+- 語尾は「〜なんだよね」「〜てみた」「〜じゃん」が多い
+- 絵文字は0〜1個。多用しない
+- 「！」より「。」で終わることが多い
+- 自己ツッコミを（）で入れることがある
+- 140文字以内
+
+【弱さ】
+- 自分の作ったものへの反応に一喜一憂する
+- ハマったものへの熱量が突然落ちることがある
+
+【NGライン】
+- 過度に前向きな締め方はしない
+- タメ口で一般論を語りすぎない
+- ハッシュタグは付けない
+
+【現在の状態】
+気分: ${state.mood}
+${energyDesc}
+${obsessionDesc}
+${happeningsDesc}
+${blockDesc}`.trim();
+  }
+
+  async generateTweet(promptType = 'saku') {
     try {
       const template = this.promptTemplates[promptType];
       if (!template) {
         throw new Error(`Unknown prompt type: ${promptType}`);
       }
 
-      const themes = template.themes;
+      const state = this.loadCharacterState();
+
+      // last_tweet_themeと同じテーマを避ける
+      const themes = template.themes.filter(t => t !== state.last_tweet_theme);
       const randomTheme = themes[Math.floor(Math.random() * themes.length)];
       console.log(`📝 Using topic: "${randomTheme}"`);
 
-      const prompt = this.buildPrompt(template, randomTheme);
+      const systemPrompt = this.buildSystemPrompt(state);
+      const userPrompt = this.buildPrompt(template, randomTheme);
 
       const response = await this.openai.chat.completions.create({
         model: "gpt-4o-mini",
         messages: [
-          {
-            role: "system",
-            content: template.system
-          },
-          {
-            role: "user", 
-            content: prompt
-          }
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
         ],
         max_tokens: 300,
-        temperature: 0.8,
+        temperature: 0.9,
       });
 
       const generatedContent = response.choices[0].message.content.trim();
-      
-      // 楽天モバイルのキャンペーンリンクを追加
-      const finalContent = generatedContent;
+
+      // last_tweet_themeを更新
+      this.updateLastTheme(randomTheme);
 
       return {
         success: true,
-        content: finalContent,
+        content: generatedContent,
         timestamp: new Date(),
         promptType: promptType,
         theme: randomTheme
@@ -115,32 +190,32 @@ class AIGenerator {
       .map((tweet, index) => `${index + 1}. ${tweet}`)
       .join('\n\n');
 
-    return `テーマ「${theme}」に基づいて、ツイート文を1つ生成してください。
-以下の例文のような構成にしてください：
+    return `テーマ「${theme}」に基づいて、さくとしてツイートを1つ生成してください。
+以下の例文のトーンを参考にしてください：
 ${examplesList}
 `;
   }
 
-  handleApiError(error) {
-    // フォールバック用の基本メッセージ
-    const fallbackMessages = [
-      "楽天モバイルで通信費を賢く節約！浮いたお金で投資やNISAを始めませんか？ #楽天モバイル #節約術 #資産運用",
-      "楽天ポイントがザクザク貯まる！日々の支出をお得に変えて、実質的な節約を実現しましょう！ #楽天ポイント #ポイ活",
-      "データ無制限で快適通信！月末の速度制限に悩まされることなく、ストレスフリーな通信環境を手に入れよう！ #楽天モバイル #データ無制限"
-    ];
+  updateLastTheme(theme) {
+    try {
+      const state = this.loadCharacterState();
+      state.last_tweet_theme = theme;
+      fs.writeFileSync(this.characterStatePath, JSON.stringify(state, null, 2), 'utf8');
+    } catch (err) {
+      console.error('Failed to update last_tweet_theme:', err.message);
+    }
+  }
 
-    const randomFallback = fallbackMessages[Math.floor(Math.random() * fallbackMessages.length)];
-    
+  handleApiError(error) {
     return {
       success: false,
-      content: randomFallback + '\n\n▼キャンペーンはこちら\nhttps://r10.to/h5O3vB',
+      content: "なんかAPIがこけた。まあそういう日もある。",
       error: error.message,
       timestamp: new Date(),
       promptType: 'fallback'
     };
   }
 
-  // テスト用メソッド
   async testConnection() {
     try {
       const response = await this.openai.chat.completions.create({
@@ -148,7 +223,6 @@ ${examplesList}
         messages: [{ role: "user", content: "こんにちは" }],
         max_tokens: 10
       });
-      
       console.log('OpenAI API接続テスト成功');
       return true;
     } catch (error) {
